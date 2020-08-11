@@ -1,266 +1,259 @@
 /*
-* Sony Bravia TV SmartThings Device Handler
+* Sony Bravia TV SmartThings Device Handler (SmartThings Classic Only)
 *
-* Based on Steve Abratt's example:
+* Based on Steve Bratt's example:
 *    https://gist.githubusercontent.com/steveAbratt/43133bf9011febf6437a662eb5998ec8/raw/4c9f61c7822ba944192862d6a56a9c1a0b81d1bf/bravia.groovy
 *
 * Configuration Steps:
-*    1. Enable Remote Start on the TV: [Settings] → [Network] → [Home Network Setup] → [Remote Start] → [On]
-*    2. Enable Pre-Shared Key on the TV: [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Authentication] → [Normal and Pre-Shared Key]
-*    3. Set Pre-Shared Key on the TV: [Settings] → [Network] → [Home Network Setup] → [IP Control] → [Pre-Shared Key] → [sony] *Note: You can select any Pre-Shared Key you want
-*    4. Assign the TV a static IP address
-*    5. Add this Device Handler on your SmartThings HUB and publish it
-*    6. Ensure the TV is ON
-*    7. Add the Device to SmartThings
-*        Type = Sony Bravia XBR TV
-*        Device Network ID = (Hex of IP address and port in the form of 00000000:0000 and must be in ALL CAPS) (i.e. 10.0.1.220:80 is 0A0001DC:0050)
-*            *Note: You can find a converter on the Internet
-*    8. Set the Preferences in this Device Handler
-*        tvIP = IP Address of the TV (with decimals)
-*        tvPSK = passphrase for your TV
-*        tvPort = 80 (typically 80, only enter a different value if you know it is different)
-*
-*    WOLC (Wake on LAN) functionality is only necessary if the TV is in ECO mode and is NOT included in this version.
+*     1. Assign the TV a static IP address on your router
+*     2. Turn the TV ON
+*     3. Disable ECO mode on the TV: [Settings] → [Power] → [Eco] → [Power Saving] → [Off]
+*         Note: If the TV is in ECO mode, WOLC (Wake on LAN) functionality is necessary and is NOT included in this version.
+*     4. Enable Remote Start on the TV: [Settings] → [Network] → [Remote Start] → [On]
+*     5. Enable Remote Device Settings on the TV: [Settings] → [Network] → [Remote Device Settings] → [Remote Device Settings] → [On]
+*     6. Enable Pre-Shared Key on the TV: [Settings] → [Network] → [Home Network] → [IP Control] → [Authentication] → [Normal and Pre-Shared Key]
+*     7. Set Pre-Shared Key on the TV: [Settings] → [Network] → [Home Network] → [IP Control] → [Pre-Shared Key] → [sony] *Note: You can select any Pre-Shared Key you want
+*     8. Enable Simple IP Control on the TV: [Settings] → [Network] → [Home Network] → [IP Control] → [Simple IP Control] → [On]
+*     9. Add this Device Handler on your SmartThings HUB and publish it
+*    10. Add the Device to SmartThings
+*         Type = Sony Bravia TV
+*         Device Network ID = (Hex of IP address and port in the form of 00000000:0000 and must be in ALL CAPS) (i.e. 10.0.1.220:80 is 0A0001DC:0050)
+*             *Note: You can find a converter on the Internet
+*    11. Set the Preferences in this Device Handler
+*         tvIP = IP Address of the TV (with decimals)
+*         tvPort = 80 (typically 80, only enter a different value if you know it is different)
+*         tvPSK = passphrase for your TV
+*    12. In SmartThings (Classic) navigate to the Device UI and press the Refresh button
+*    13. Install Pollster (https://github.com/statusbits/smartthings/blob/master/Pollster.md) and configure the Device to poll every 5 minutes
 */
- 
-metadata {
-  definition (name: "Sony Bravia TV", namespace: "Brasel", author: "Josh Brasel") {
-    capability "Switch"
-    capability "Polling"
-    capability "Refresh"
-    capability "Switch Level"
 
-    command "powerButton"
-    command "refreshButton"
-    command "volumeUpButton"
-    command "volumeDownButton"
-    command "muteButton"
-    command "channelUpButton"
-    command "channelDownButton"
-    command "sleepTimerButton"
-    command "applicationLauncherButton"
-    command "discoverButton"
-    command "homeButton"
-    command "returnButton"
-    command "exitButton"
-    command "upButton"
-    command "rightButton"
-    command "downButton"
-    command "leftButton"
-    command "centerButton"
-    command "inputButton"
-    command "analogButton"
-    command "hdmi1Button"
-    command "hdmi2Button"
-    command "hdmi3Button"
-    command "hdmi4Button"
-    command "video1Button"
-    command "video2Button"
-    command "tvButton"
-    command "playButton"
-    command "pauseButton"
-    command "rewindButton"
-    command "fastforwardButton"
-    command "previousButton"
-    command "nextButton"
-    command "stopButton"
-    command "netflixButton"
-    command "vuduButton"
-    command "hboButton"
-    command "youTubeButton"
-    command "wweButton"
-    command "disneyButton"
-  }
+metadata{
+    definition (name: "Sony Bravia TV (v1.1)", namespace: "Brasel", author: "Josh Brasel"){
+        capability "Switch"
+        capability "Polling"
+        capability "Refresh"
+        capability "Switch Level"
 
-  tiles(scale:2) {
-    multiAttributeTile(name:"mainTile", type:"generic", width:6, height:4) {
-        tileAttribute("device.switch", key: "PRIMARY_CONTROL") {
-            attributeState "off", label: '${currentValue}', action: "switch.on", icon: "st.Electronics.electronics18", backgroundColor: "#ffffff", nextState: "on"
-            attributeState "on", label: '${currentValue}', action: "switch.off", icon: "st.Electronics.electronics18", backgroundColor: "#00a0dc", nextState: "off"}
-        tileAttribute("device.input", key: "SECONDARY_CONTROL") {
-            attributeState "input", label: '${currentValue}'}
-        tileAttribute("device.level", key: "SLIDER_CONTROL") {
-            attributeState "level", action:"setLevel", icon: 'st.Entertainment.entertainment15',  defaultState: "true"}
+        command "powerButton"
+        command "refreshButton"
+        command "volumeUpButton"
+        command "volumeDownButton"
+        command "muteButton"
+        command "channelUpButton"
+        command "channelDownButton"
+        command "sleepTimerButton"
+        command "applicationLauncherButton"
+        command "discoverButton"
+        command "homeButton"
+        command "returnButton"
+        command "exitButton"
+        command "upButton"
+        command "rightButton"
+        command "downButton"
+        command "leftButton"
+        command "centerButton"
+        command "inputButton"
+        command "analogButton"
+        command "hdmi1Button"
+        command "hdmi2Button"
+        command "hdmi3Button"
+        command "hdmi4Button"
+        command "video1Button"
+        command "video2Button"
+        command "tvButton"
+        command "playButton"
+        command "pauseButton"
+        command "rewindButton"
+        command "fastforwardButton"
+        command "previousButton"
+        command "nextButton"
+        command "stopButton"
+        command "netflixButton"
+        command "vuduButton"
+        command "hboButton"
+        command "youTubeButton"
+        command "wweButton"
+        command "disneyButton"
     }
-    standardTile("powerButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Power", action:"powerButton", icon:"st.samsung.da.RC_ic_power"}
-    standardTile("refreshButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Refresh", action:"refresh", icon:"st.secondary.refresh-icon"}
-    standardTile("volumeUpButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"volumeUpButton", icon:"st.samsung.da.oven_ic_plus"}
-    standardTile("volumeDownButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"volumeDownButton", icon:"st.samsung.da.oven_ic_minus"}
-    valueTile("muteButton", "device.mute", inactiveLabel: false, height: 1, width: 1, decoration: "flat") {
-        state "true", label:"Mute", action:"muteButton", icon: "st.custom.sonos.muted",  nextState: "false"
-        state "false", label:"Mute", action:"muteButton", icon: "st.custom.sonos.unmuted",  nextState: "true"}
-    standardTile("channelUpButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"channelUpButton", icon:"st.samsung.da.oven_ic_up"}
-    standardTile("channelDownButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"channelDownButton", icon:"st.samsung.da.oven_ic_down"}
-    standardTile("sleepTimerButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Sleep Timer", action:"sleepTimerButton", icon:"st.Office.office6"}
-    standardTile("applicationLauncherButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Apps", action:"applicationLauncherButton", icon:""}
-    standardTile("discoverButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Discover", action:"discoverButton", icon:""}
-    standardTile("homeButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Home", action:"homeButton", icon:"st.Home.home2"} 
-    standardTile("returnButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Return", action:"returnButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Return.png"}
-    standardTile("exitButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Exit", action:"exitButton", icon:"st.samsung.da.washer_ic_cancel"}
-    standardTile("upButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"upButton", icon:"st.thermostat.thermostat-up"}
-    standardTile("rightButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"rightButton", icon:"st.thermostat.thermostat-right"}
-    standardTile("downButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"downButton", icon:"st.thermostat.thermostat-down"}
-    standardTile("leftButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"leftButton", icon:"st.thermostat.thermostat-left"}
-    standardTile("centerButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"centerButton", icon:"st.illuminance.illuminance.dark"}
-    standardTile("inputButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Input", action:"inputButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Input.png"}
-    standardTile("analogButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Analog", action:"analogButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Analog.png"}
-    standardTile("hdmi1Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"HDMI 1", action:"hdmi1Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/GoogleFiber.png"}
-    standardTile("hdmi2Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"HDMI 2", action:"hdmi2Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/XBOX.png"}
-    standardTile("hdmi3Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"HDMI 3", action:"hdmi3Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Switch.png"}
-    standardTile("hdmi4Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"HDMI 4", action:"hdmi4Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/HDMI.png"}
-    standardTile("video1Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Video 1", action:"video1Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/RCA.png"}
-    standardTile("video2Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"Video 2", action:"video2Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Component.png"}
-    standardTile("tvButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"TV", action:"tvButton", icon:""}
-    standardTile("playButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"playButton", icon:"st.sonos.play-btn"}
-    standardTile("pauseButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"pauseButton", icon:"st.sonos.pause-btn"}
-    standardTile("rewindButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"rewindButton", icon:"st.sonos.previous-btn"}
-    standardTile("fastforwardButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"fastforwardButton", icon:"st.sonos.next-btn"}
-    standardTile("previousButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"previousButton", icon:"st.sonos.previous-btn"}
-    standardTile("nextButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"nextButton", icon:"st.sonos.next-btn"}
-    standardTile("stopButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"stopButton", icon:"st.sonos.stop-btn"}
-    standardTile("netflixButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"netflixButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Netflix.png"}
-    standardTile("vuduButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"vuduButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Vudu.png"}
-    standardTile("hboButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"hboButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/HBOMax.png"}
-    standardTile("youTubeButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"youTubeButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/YouTube.png"}
-    standardTile("disneyButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"disneyButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Disney.png"}
-    standardTile("wweButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"wweButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/WWE.png"}
-    standardTile("emptyButtonLarge", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
-        state "default", label:"", action:"", icon:""}     
-    standardTile("emptyButtonSmall", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
-        state "default", label:"", action:"", icon:""} 
+
+    tiles(scale:2){
+      multiAttributeTile(name:"mainTile", type:"generic", width:6, height:4){
+          tileAttribute("device.switch", key: "PRIMARY_CONTROL"){
+              attributeState "off", label: '${currentValue}', action: "switch.on", icon: "st.Electronics.electronics18", backgroundColor: "#ffffff", nextState: "on"
+              attributeState "on", label: '${currentValue}', action: "switch.off", icon: "st.Electronics.electronics18", backgroundColor: "#00a0dc", nextState: "off"}
+          tileAttribute("device.input", key: "SECONDARY_CONTROL"){
+              attributeState "input", label: '${currentValue}'}
+          tileAttribute("device.level", key: "SLIDER_CONTROL"){
+              attributeState "level", action:"setLevel", icon: 'st.Entertainment.entertainment15',  defaultState: "true"}
+      }
+      standardTile("powerButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Power", action:"powerButton", icon:"st.samsung.da.RC_ic_power"}
+      standardTile("refreshButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Refresh", action:"refresh", icon:"st.secondary.refresh-icon"}
+      standardTile("volumeUpButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"volumeUpButton", icon:"st.samsung.da.oven_ic_plus"}
+      standardTile("volumeDownButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"volumeDownButton", icon:"st.samsung.da.oven_ic_minus"}
+      valueTile("muteButton", "device.mute", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "true", label:"Mute", action:"muteButton", icon: "st.custom.sonos.muted"
+          state "false", label:"Mute", action:"muteButton", icon: "st.custom.sonos.unmuted"}
+      standardTile("channelUpButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"channelUpButton", icon:"st.samsung.da.oven_ic_up"}
+      standardTile("channelDownButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"channelDownButton", icon:"st.samsung.da.oven_ic_down"}
+      standardTile("sleepTimerButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Sleep Timer", action:"sleepTimerButton", icon:"st.Office.office6"}
+      standardTile("applicationLauncherButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Apps", action:"applicationLauncherButton", icon:""}
+      standardTile("discoverButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Discover", action:"discoverButton", icon:""}
+      standardTile("homeButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Home", action:"homeButton", icon:"st.Home.home2"} 
+      standardTile("returnButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Return", action:"returnButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Return.png"}
+      standardTile("exitButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Exit", action:"exitButton", icon:"st.samsung.da.washer_ic_cancel"}
+      standardTile("upButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"upButton", icon:"st.thermostat.thermostat-up"}
+      standardTile("rightButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"rightButton", icon:"st.thermostat.thermostat-right"}
+      standardTile("downButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"downButton", icon:"st.thermostat.thermostat-down"}
+      standardTile("leftButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"leftButton", icon:"st.thermostat.thermostat-left"}
+      standardTile("centerButton", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"centerButton", icon:"st.illuminance.illuminance.dark"}
+      standardTile("inputButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Input", action:"inputButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Input.png"}
+      standardTile("analogButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Analog", action:"analogButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Analog.png"}
+      standardTile("hdmi1Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"HDMI 1", action:"hdmi1Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/GoogleFiber.png"}
+      standardTile("hdmi2Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"HDMI 2", action:"hdmi2Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/XBOX.png"}
+      standardTile("hdmi3Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"HDMI 3", action:"hdmi3Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Switch.png"}
+      standardTile("hdmi4Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"HDMI 4", action:"hdmi4Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/HDMI.png"}
+      standardTile("video1Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Video 1", action:"video1Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/RCA.png"}
+      standardTile("video2Button", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"Video 2", action:"video2Button", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Component.png"}
+      standardTile("tvButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"TV", action:"tvButton", icon:""}
+      standardTile("playButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"playButton", icon:"st.sonos.play-btn"}
+      standardTile("pauseButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"pauseButton", icon:"st.sonos.pause-btn"}
+      standardTile("rewindButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"rewindButton", icon:"st.sonos.previous-btn"}
+      standardTile("fastforwardButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"fastforwardButton", icon:"st.sonos.next-btn"}
+      standardTile("previousButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"previousButton", icon:"st.sonos.previous-btn"}
+      standardTile("nextButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"nextButton", icon:"st.sonos.next-btn"}
+      standardTile("stopButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"stopButton", icon:"st.sonos.stop-btn"}
+      standardTile("netflixButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"netflixButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Netflix.png"}
+      standardTile("vuduButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"vuduButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Vudu.png"}
+      standardTile("hboButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"hboButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/HBOMax.png"}
+      standardTile("youTubeButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"youTubeButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/YouTube.png"}
+      standardTile("disneyButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"disneyButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/Disney.png"}
+      standardTile("wweButton", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"wweButton", icon:"https://raw.githubusercontent.com/joshbrasel/SmartThingsCustomIcons/master/WWE.png"}
+      standardTile("emptyButtonLarge", "device.switch", inactiveLabel: false, height: 2, width: 2, decoration: "flat"){
+          state "default", label:"", action:"", icon:""}     
+      standardTile("emptyButtonSmall", "device.switch", inactiveLabel: false, height: 1, width: 1, decoration: "flat"){
+          state "default", label:"", action:"", icon:""} 
         
-    main("mainTile")
+      main("mainTile")
 
-    details(["mainTile",
-        "powerButton",
-        "refreshButton",
-        "homeButton",
-        "muteButton",
-        "sleepTimerButton",
-        "exitButton",
-        "volumeUpButton",
-        "hdmi1Button",
-        "video1Button",
-        "channelUpButton",
-        "hdmi2Button",
-        "video2Button",
-        "volumeDownButton",
-        "hdmi3Button",
-        "analogButton",
-        "channelDownButton",
-        "hdmi4Button",
-        "inputButton",
-        "netflixButton",
-        "vuduButton",
-        "hboButton",
-        "youTubeButton",
-        "disneyButton",
-        "wweButton",
-        "playButton",
-        "pauseButton",
-        "upButton",
-        "stopButton",
-        "returnButton",
-        "rewindButton",
-        "fastforwardButton",
-        "emptyButtonSmall",
-        "emptyButtonSmall",
-        "leftButton",
-        "centerButton",
-        "rightButton",
-        "emptyButtonLarge",
-        "downButton",
-        "emptyButtonLarge"
-        ])
-        /* Not used
-        "discoverButton",
-        "previousButton",
-        "nextButton",
-        "tvButton"
-        "applicationLauncherButton",
-        */
+      details(["mainTile",
+          "powerButton",
+          "refreshButton",
+          "homeButton",
+          "muteButton",
+          "sleepTimerButton",
+          "exitButton",
+          "volumeUpButton",
+          "hdmi1Button",
+          "video1Button",
+          "channelUpButton",
+          "hdmi2Button",
+          "video2Button",
+          "volumeDownButton",
+          "hdmi3Button",
+          "analogButton",
+          "channelDownButton",
+          "hdmi4Button",
+          "inputButton",
+          "netflixButton",
+          "vuduButton",
+          "hboButton",
+          "youTubeButton",
+          "disneyButton",
+          "wweButton",
+          "playButton",
+          "pauseButton",
+          "upButton",
+          "stopButton",
+          "returnButton",
+          "rewindButton",
+          "fastforwardButton",
+          "emptyButtonSmall",
+          "emptyButtonSmall",
+          "leftButton",
+          "centerButton",
+          "rightButton",
+          "emptyButtonLarge",
+          "downButton",
+          "emptyButtonLarge"])
+
+          /* Not used
+          "discoverButton",
+          "previousButton",
+          "nextButton",
+          "tvButton"
+          "applicationLauncherButton",
+          */
     }
 
-    preferences {
+    preferences{
         input("tvIP", "string", title:"TV IP Address", description: "", required: true, displayDuringSetup: false)
         input("tvPort", "string", title:"TV Port", description: "", required: true, displayDuringSetup: false)
         input("tvPSK", "string", title:"TV PSK Passphrase", description: "", required: true, displayDuringSetup: false)
     }
 }
 
-/* Method is called automatically when installed */
-def installed() {
+// Method is called automatically when installed
+def installed(){
     resetState()
-    refresh()
 }
 
-/* Method is called automatically when preferences are updated */
+// Method is called automatically when preferences are updated
 def updated(){
     resetState()
-    refresh()
 }
 
-/* Method is called automatically approximately every 5 minutes */
-def poll() {
+// Method is called automatically approximately every 5 minutes (by Pollster)
+def poll(){
     state.tvPollCount = (state.tvPollCount + 1)
-    
-    getPowerStatus([callback: pollGetPowerStatusCallBack])
+    pollTV()
 
     // If the TV has been polled more than once without a response, assume it is off
-    if (state.tvPollCount > 1 ) {
-        state.tvStatus = "off"
-        state.tvVolumeLevel = 0
-        state.tvMuteStatus = "false"
-        state.playingContentURI = ""
-        state.playingContent = "TV Off"
-        sendEvent(name: "level", value: state.tvVolumeLevel)
-        sendEvent(name: "mute", value: state.tvMuteStatus)
-        sendEvent(name: "input", value: state.playingContent)
-        sendEvent(name: "switch", value: state.tvStatus)
+    if (state.tvPollCount > 1 ){
+        poweredOff()
     }
 }
 
-/*Method is called automatically as a result of calling HubAction(), unless a callback is assigned*/
-def parse(description) {
+// Method is called automatically as a result of calling HubAction(), unless a callback is assigned
+def parse(description){
     Map response = parseLanMessage(description)
 
     if (response){
@@ -268,18 +261,39 @@ def parse(description) {
     }
 }
 
-def refresh() {
+def refresh(){
     setConfiguration()
     poll()
 }
 
-def on() {
+def pollTV(){
+   getPowerStatus([callback: pollGetPowerStatusCallBack])
+}
+
+def pollTVNoPowerStatus(){
+    getVolumeInformation([:])
+    getPlayingContentInformation([:])
+}
+
+private poweredOff(){
+    state.tvStatus = "off"
+    state.tvVolumeLevel = 0
+    state.tvMuteStatus = "false"
+    state.playingContentURI = ""
+    state.playingContent = "TV Off"
+    sendEvent(name: "level", value: state.tvVolumeLevel)
+    sendEvent(name: "mute", value: state.tvMuteStatus)
+    sendEvent(name: "input", value: state.playingContent)
+    sendEvent(name: "switch", value: state.tvStatus)
+}
+
+def on(){
     state.tvStatus = "on"
     sendEvent(name: "switch", value: state.tvStatus)
     setPowerStatus("true", [callback: sendCommandCallBack])
 }
 
-def off() {
+def off(){
     state.tvStatus = "off"
     sendEvent(name: "switch", value: state.tvStatus)
     setPowerStatus("false", [callback: sendCommandCallBack])
@@ -313,32 +327,39 @@ private setConfiguration(){
     }
 }
 
+private validateConfiguration(){
+    if (state.tvIP && state.tvPort && state.tvPSK){
+   		return true
+   	} else{
+    	return false
+    }
+}
 private parseResponse(Map response){
     Map responseJSON = [:]
     int responseID = 0
     
-    if(response.status == 200){
+    if(response.status == httpOKStatus()){
         if (response.json?.id){
             responseID = response.json.id.toInteger()
                responseJSON =  response.json
 
-            if (responseID == getGetPowerStatusCommandID()) {
+            if (responseID == getGetPowerStatusCommandID()){
                 parseGetPowerStatusResponseJSON(responseJSON)
             }
             
-            if (responseID == getSetPowerStatusCommandID()) {
+            if (responseID == getSetPowerStatusCommandID()){
                 parseSetPowerStatusResponseJSON(responseJSON)
             }
 
-            if (responseID == getGetVolumeInformationCommandID()) {
+            if (responseID == getGetVolumeInformationCommandID()){
                 parseGetVolumeInformationResponseJSON(responseJSON)
             }
 
-            if (responseID == getGetPlayingContentCommandID()) {
+            if (responseID == getGetPlayingContentCommandID()){
                 parseGetPlayingContentResponseJSON(responseJSON)
             }
 
-            if (responseID == getGetCurrentExternalInputsStatusCommandID()) {  
+            if (responseID == getGetCurrentExternalInputsStatusCommandID()){  
                 parseGetCurrentExternalInputsStatusResponseJSON(responseJSON)
             }
 
@@ -362,7 +383,7 @@ private parseResponse(Map response){
 def sendCommandCallBack(physicalgraph.device.HubResponse hubResponse){
     Map response = transformHubResponse(hubResponse)
     parseResponse(response)
-    poll()  
+    pollTVNoPowerStatus()  
 }
 
 def pollGetPowerStatusCallBack(physicalgraph.device.HubResponse hubResponse){
@@ -399,17 +420,11 @@ private parseGetPowerStatusResponseJSON(Map powerStatusInformationJSON){
     if (powerStatusInformation){
         if (powerStatusInformation[0].status == "active"){
             state.tvStatus = "on"
+            sendEvent(name: "switch", value: state.tvStatus)
         } else{
-            state.tvStatus = "off"
-            state.tvVolumeLevel = 0
-            state.tvMuteStatus = "false"
-            state.playingContentURI = ""
-            state.playingContent = "TV Off"
-            sendEvent(name: "level", value: state.tvVolumeLevel)
-            sendEvent(name: "mute", value: state.tvMuteStatus)
-            sendEvent(name: "input", value: state.playingContent)
+            poweredOff()
         }
-        sendEvent(name: "switch", value: state.tvStatus)
+        
     }
 }
 
@@ -417,18 +432,22 @@ private parseSetPowerStatusResponseJSON(Map responseJSON){
     // No response parsing required
 }
 
-private sendSystemCommand(String messageBody, Map callBack) {
-    def hubActionResult = new physicalgraph.device.HubAction(
-            method:     "POST",
-            path:       "/sony/system",
-            body:       messageBody,
-            headers:    [
-                        "Host":         "${state.tvIP}:${state.tvPort}", 
-                        "Content-Type": "application/json",
-                        "X-Auth-PSK":   "${state.tvPSK}"
-                        ], null, callBack
-    )
-    sendHubCommand(hubActionResult)
+private sendSystemCommand(String messageBody, Map callBack){
+    if(validateConfiguration() == true){
+        def hubActionResult = new physicalgraph.device.HubAction(
+                method:     "POST",
+                path:       "/sony/system",
+                body:       messageBody,
+                headers:    [
+                            "Host":         "${state.tvIP}:${state.tvPort}", 
+                            "Content-Type": "application/json",
+                            "X-Auth-PSK":   "${state.tvPSK}"
+                            ], null, callBack
+        )
+        sendHubCommand(hubActionResult)
+   	} else{
+        log.debug("Invalid configuration")
+    }   
 }
 
 private getVolumeInformation(Map callBack){
@@ -467,18 +486,22 @@ private parseSetSpeakerVolumeResponseJSON(Map responseJSON){
     // No response parsing required
 }
 
-private sendAudioCommand(String messageBody, Map callBack) {
-    def hubActionResult = new physicalgraph.device.HubAction(
-            method:     "POST",
-            path:       "/sony/audio",
-            body:       messageBody,
-            headers:    [
-                        "Host":         "${state.tvIP}:${state.tvPort}", 
-                        "Content-Type": "application/json",
-                        "X-Auth-PSK":   "${state.tvPSK}"
-                        ], null, callBack
-    )
-    sendHubCommand(hubActionResult)
+private sendAudioCommand(String messageBody, Map callBack){
+    if(validateConfiguration() == true){
+        def hubActionResult = new physicalgraph.device.HubAction(
+                method:     "POST",
+                path:       "/sony/audio",
+                body:       messageBody,
+                headers:    [
+                            "Host":         "${state.tvIP}:${state.tvPort}", 
+                            "Content-Type": "application/json",
+                            "X-Auth-PSK":   "${state.tvPSK}"
+                            ], null, callBack
+        )
+        sendHubCommand(hubActionResult)
+   	} else{
+        log.debug("Invalid configuration")
+    }
 }
 
 private getPlayingContentInformation(Map callBack){
@@ -537,18 +560,22 @@ private parseGetCurrentExternalInputsStatusResponseJSON(Map externalInputInforma
     }
 }
     
-private sendAVCommand(String messageBody, Map callBack) {
-    def hubActionResult = new physicalgraph.device.HubAction(
-            method:     "POST",
-            path:       "/sony/avContent",
-            body:       messageBody,
-            headers:    [
-                        "Host":         "${state.tvIP}:${state.tvPort}", 
-                        "Content-Type": "application/json",
-                        "X-Auth-PSK":   "${state.tvPSK}"
-                        ], null, callBack
-    )
-    sendHubCommand(hubActionResult)
+private sendAVCommand(String messageBody, Map callBack){  
+    if(validateConfiguration() == true){
+        def hubActionResult = new physicalgraph.device.HubAction(
+                method:     "POST",
+                path:       "/sony/avContent",
+                body:       messageBody,
+                headers:    [
+                            "Host":         "${state.tvIP}:${state.tvPort}", 
+                            "Content-Type": "application/json",
+                            "X-Auth-PSK":   "${state.tvPSK}"
+                            ], null, callBack
+        )
+        sendHubCommand(hubActionResult)
+   	} else{
+        log.debug("Invalid configuration")
+    }
 }
 
 private getApplicationList(Map callBack){
@@ -576,46 +603,54 @@ private parseGetApplicationListResponseJSON(Map applicationListInformationJSON){
             }
         }
         state.applicationList = applicationList
-    } 
+    }
 }
 
 private parseSetActiveAppResponseJSON(Map activeAppInformation){
     // No response parsing required
 }
 
-private sendAppControlCommand(String messageBody, Map callBack) {
-    def hubActionResult = new physicalgraph.device.HubAction(
-            method:     "POST",
-            path:       "/sony/appControl",
-            body:        messageBody,
-            headers:     [
-                        "Host":         "${state.tvIP}:${state.tvPort}", 
-                        "Content-Type": "application/json",
-                        "X-Auth-PSK":   "${state.tvPSK}"
-                        ], null, callBack
-    )
-    sendHubCommand(hubActionResult)
+private sendAppControlCommand(String messageBody, Map callBack){ 
+    if(validateConfiguration() == true){
+        def hubActionResult = new physicalgraph.device.HubAction(
+                method:     "POST",
+                path:       "/sony/appControl",
+                body:        messageBody,
+                headers:     [
+                            "Host":         "${state.tvIP}:${state.tvPort}", 
+                            "Content-Type": "application/json",
+                            "X-Auth-PSK":   "${state.tvPSK}"
+                            ], null, callBack
+        )
+        sendHubCommand(hubActionResult)
+    } else{
+        log.debug("Invalid configuration")
+    }
 }
 
-private sendIRCCCommand(rawCommand, Map callBack){
+private sendIRCCCommand(String rawCommand, Map callBack){
     String body = "<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\"><IRCCCode>${rawCommand}</IRCCCode></u:X_SendIRCC></s:Body></s:Envelope>"
 
-    def hubActionResult = new physicalgraph.device.HubAction(
-            method:     "POST",
-            path:       "/sony/IRCC",
-            body:       body,
-            headers:    [
-                        "Host":             "${state.tvIP}:${state.tvPort}", 
-                        "Content-Type":     "text/xml; charset=\"utf-8\"",
-                        "X-Auth-PSK":       "${state.tvPSK}",
-                        "SOAPAction":       "\"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC\"",
-                        "Content-Length":   body.length(),
-                        ], null, callBack
-    )
-    sendHubCommand(hubActionResult)
+    if(validateConfiguration() == true){
+        def hubActionResult = new physicalgraph.device.HubAction(
+                method:     "POST",
+                path:       "/sony/IRCC",
+                body:       body,
+                headers:    [
+                            "Host":             "${state.tvIP}:${state.tvPort}", 
+                            "Content-Type":     "text/xml; charset=\"utf-8\"",
+                            "X-Auth-PSK":       "${state.tvPSK}",
+                            "SOAPAction":       "\"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC\"",
+                            "Content-Length":   body.length(),
+                            ], null, callBack
+        )
+        sendHubCommand(hubActionResult)
+   	} else{
+        log.debug("Invalid configuration")
+    }
 }
 
-private resetState() {
+private resetState(){
     state.tvPollCount = 0
     state.tvVolumeLevel = 0
     state.tvMuteStatus = "false"
@@ -633,20 +668,20 @@ private resetState() {
     state.tvDeviceNetworkID = ""
 }
 
-/* Message ID constants */
+/* Message constants */
 private getSetPowerStatusCommandID(){
     return 1
 }
 
-private getGetPowerStatusCommandID() {
+private getGetPowerStatusCommandID(){
     return 2
 }
 
-private getGetVolumeInformationCommandID() {
+private getGetVolumeInformationCommandID(){
     return 3
 }
 
-private getGetPlayingContentCommandID() {
+private getGetPlayingContentCommandID(){
     return 4
 }
 
@@ -666,6 +701,11 @@ private getSetActiveAppCommandID(){
     return 8
 }
 
+def httpOKStatus(){
+	return 200
+}
+
+/* Buttons*/
 def powerButton(){
     sendIRCCCommand("AAAAAQAAAAEAAAAVAw==", [callback: sendCommandCallBack])
 }
@@ -732,13 +772,14 @@ def leftButton(){
 
 def centerButton(){
     sendIRCCCommand("AAAAAgAAAJcAAABKAw==", [:])
+    runIn(10, pollTVNoPowerStatus)
 }
 
 def inputButton(){
     sendIRCCCommand("AAAAAQAAAAEAAAAlAw==", [:])
 
     // Unable to handle refreshing UI on a callback because the input command is a menu that has multiple ways to change the input (center button, no button, etc).  Assume user makes selection within 10 seconds.
-    runIn(10,poll)
+    runIn(10, pollTVNoPowerStatus)
 }
 
 def analogButton(){
